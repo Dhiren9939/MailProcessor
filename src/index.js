@@ -16,35 +16,18 @@ const FORWARDER_EMAIL = process.env.FORWARDER_EMAIL;
 const RECIPIENT_EMAIL = process.env.RECIPIENT_EMAIL;
 const MAIL_BUCKET = process.env.MAIL_BUCKET;
 
-if (!MAIL_BUCKET) {
+if (!MAIL_BUCKET || !FORWARDER_EMAIL || !RECIPIENT_EMAIL) {
     console.error(
         JSON.stringify({
             level: "CRITICAL",
-            message: "Missing MAIL_BUCKET env variable",
+            message: "Missing required environment variables",
+            hasBucket: !!MAIL_BUCKET,
+            hasForwarder: !!FORWARDER_EMAIL,
+            hasRecipient: !!RECIPIENT_EMAIL,
         }),
     );
+    process.exit(1);
 }
-
-if (!FORWARDER_EMAIL) {
-    console.error(
-        JSON.stringify({
-            level: "CRITICAL",
-            message: "Missing FORWARDER_EMAIL env variable",
-        }),
-    );
-}
-
-if (!RECIPIENT_EMAIL) {
-    console.error(
-        JSON.stringify({
-            level: "CRITICAL",
-            message: "Missing RECIPENT_EMAIL env variable",
-        }),
-    );
-}
-
-const missingENV = !MAIL_BUCKET || !FORWARDER_EMAIL || !RECIPIENT_EMAIL;
-if (missingENV) process.exit(1);
 
 const s3Client = new S3Client({ region: "ap-south-1" });
 const sesClient = new SESClient({ region: "ap-south-1" });
@@ -247,8 +230,6 @@ async function sendRaw(message, messageId) {
 
 function serializeError(err) {
     if (err instanceof Error) {
-        // This explicitly pulls out non-enumerable properties
-        // and combines them with any custom enumerable properties
         return {
             message: err.message,
             stack: err.stack,
