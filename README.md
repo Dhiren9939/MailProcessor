@@ -16,18 +16,16 @@ MailProcessor is an AWS Lambda email forwarder for SES inbound mail. SES stores 
 
 ```text
 .
-├── Dockerfile
-├── README.md
-├── eslint.config.js
-├── examples
-│   ├── env.example
-│   ├── sample-email.eml
-│   ├── ses-event.json
-│   └── template.example.yaml
-├── package.json
-├── src
-│   └── index.js
-└── template.yaml              # local SAM template, ignored by git
+|-- Dockerfile
+|-- README.md
+|-- eslint.config.js
+|-- examples
+|   |-- env.example
+|   |-- sample-email.eml
+|   `-- ses-event.json
+|-- package.json
+`-- src
+    `-- index.js
 ```
 
 ## Requirements
@@ -61,6 +59,28 @@ npm install
 npm run lint
 ```
 
+On Windows PowerShell, use this if script execution policy blocks `npm.ps1`:
+
+```powershell
+npm.cmd run lint
+```
+
+## Build
+
+Create a deployable `dist` folder:
+
+```bash
+npm run build
+```
+
+On Windows PowerShell, use this if script execution policy blocks `npm.ps1`:
+
+```powershell
+npm.cmd run build
+```
+
+The build copies `src/index.js` to `dist/index.js`, copies `package.json` and `package-lock.json`, then installs production dependencies into `dist/node_modules`.
+
 ## AWS Setup
 
 1. Verify `FORWARDER_EMAIL` or its domain in SES.
@@ -72,15 +92,6 @@ npm run lint
    - `s3:DeleteObject` on `arn:aws:s3:::<MAIL_BUCKET>/*`
    - `ses:SendRawEmail`
    - `ses:SendEmail`
-
-## Deploy With SAM
-
-Use [examples/template.example.yaml](examples/template.example.yaml) as a sanitized starting point. Copy it to `template.yaml`, then update bucket names, email addresses, IAM role configuration, and SES receipt rules for your AWS account.
-
-```bash
-sam build
-sam deploy --guided
-```
 
 ## Local Docker Test
 
@@ -150,7 +161,7 @@ That `messageId` must match the S3 object key containing the raw email.
 
 - The AWS clients in [src/index.js](src/index.js) use `ap-south-1`.
 - SES sandbox accounts can only send to verified recipients. Move SES out of sandbox or verify `RECIPIENT_EMAIL`.
-- The example Lambda timeout in [examples/template.example.yaml](examples/template.example.yaml) is 10 seconds. Increase it if you forward large messages or attachments.
+- The local and example Lambda timeout is 10 seconds. Increase it if you forward large messages or attachments.
 - After a successful forward, the raw S3 object is deleted.
 - If deletion fails after forwarding, the handler still returns `status: "success"` with an `issues` array.
 

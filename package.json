@@ -15,6 +15,7 @@
     "globals": "^17.6.0"
   },
   "scripts": {
+    "build": "node scripts/build-dist.mjs",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "npx eslint src"
   },
