@@ -1,0 +1,25 @@
+From: Example Sender <sender@example.com>
+To: inbound@example.com
+Subject: Sample forwarded email
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="mailprocessor-example"
+
+--mailprocessor-example
+Content-Type: text/plain; charset="UTF-8"
+
+Hello from the MailProcessor sample email.
+
+This file can be uploaded to S3 with the key example-message-id and used with examples/ses-event.json.
+
+--mailprocessor-example
+Content-Type: text/html; charset="UTF-8"
+
+<!doctype html>
+<html>
+  <body>
+    <p>Hello from the <strong>MailProcessor</strong> sample email.</p>
+    <p>This file can be uploaded to S3 with the key <code>example-message-id</code> and used with <code>examples/ses-event.json</code>.</p>
+  </body>
+</html>
+
+--mailprocessor-example--
